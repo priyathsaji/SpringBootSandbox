@@ -1,4 +1,4 @@
-package com.preact.SpringBootSandbox.hibernate.modal.unidirectional;
+package com.preact.SpringBootSandbox.hibernate.modal.onetoone.unidirectional;
 
 
 import javax.persistence.*;

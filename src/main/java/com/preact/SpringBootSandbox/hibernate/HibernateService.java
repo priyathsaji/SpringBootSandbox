@@ -1,15 +1,19 @@
 package com.preact.SpringBootSandbox.hibernate;
 
-import com.preact.SpringBootSandbox.hibernate.modal.bidirectional.HiberItemBi;
-import com.preact.SpringBootSandbox.hibernate.modal.bidirectional.HiberItemDescriptionBi;
-import com.preact.SpringBootSandbox.hibernate.modal.unidirectional.HiberItem;
-import com.preact.SpringBootSandbox.hibernate.modal.unidirectional.HiberItemDescription;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.bidirectional.HiberItemBi;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.bidirectional.HiberItemDescriptionBi;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.unidirectional.HiberItem;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.unidirectional.HiberItemDescription;
+import com.preact.SpringBootSandbox.hibernate.modal.onetomany.ItemManufacturerOTM;
+import com.preact.SpringBootSandbox.hibernate.modal.onetomany.ItemOTM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class HibernateService {
@@ -48,11 +52,11 @@ public class HibernateService {
             } else {
                 entityManager.merge(description);
             }
-            entityManager.flush();
             item.setHiberItemDescriptionBi(description);
             entityManager.persist(item);
-            entityManager.flush();
+
         });
+        entityManager.flush();
         return items2Save;
     }
 
@@ -64,13 +68,11 @@ public class HibernateService {
     }
 
 
-    public List<HiberItemDescriptionBi> findAllHiberItemDescriptionBiFromDb(){
+    public List<HiberItemDescriptionBi> findAllHiberItemDescriptionBiFromDb() {
         return entityManager
                 .createQuery("select h from HiberItemDescriptionBi h", HiberItemDescriptionBi.class)
                 .getResultList();
     }
-
-
 
 
     public List<HiberItem> findAllItemsInDb() {
@@ -79,6 +81,36 @@ public class HibernateService {
                 .getResultList();
     }
 
+
+    public List<ItemOTM> generateItems(ItemManufacturerOTM itemManufacturerOTM, int n){
+        return IntStream
+                .range(1, n+1)
+                .mapToObj(item->{
+                    ItemOTM itemOTM = new ItemOTM("Item "+ item );
+                    itemOTM.setItemManufacturer(itemManufacturerOTM);
+                    entityManager.persist(itemOTM);
+                    return itemOTM;
+                }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<ItemManufacturerOTM> addOTMData2Db(int n) {
+        List<ItemManufacturerOTM> data2return =  IntStream
+                .range(1, n + 1)
+                .mapToObj(item -> {
+                    ItemManufacturerOTM manufacturerOTM = new ItemManufacturerOTM("Manufacturer : " + item);
+                    entityManager.persist(manufacturerOTM);
+                    return manufacturerOTM;
+                })
+                .peek(item->{
+                    item.setItems(generateItems(item,10));
+                    entityManager.merge(item);
+                })
+                .collect(Collectors.toList());
+
+        entityManager.flush();
+        return data2return;
+    }
 
 
 }

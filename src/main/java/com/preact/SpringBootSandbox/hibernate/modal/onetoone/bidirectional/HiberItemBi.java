@@ -1,11 +1,11 @@
-package com.preact.SpringBootSandbox.hibernate.modal.unidirectional;
+package com.preact.SpringBootSandbox.hibernate.modal.onetoone.bidirectional;
 
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "HIBER_ITEM")
-public class HiberItem {
+@Table(name = "HIBER_ITEM_BI")
+public class HiberItemBi {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,12 +19,12 @@ public class HiberItem {
     @OneToOne(
             fetch = FetchType.LAZY // the description is not fetched unless it is required
     )
-    HiberItemDescription hiberItemDescription;
+    HiberItemDescriptionBi hiberItemDescriptionBi;
 
-    public HiberItem() {
+    public HiberItemBi() {
     }
 
-    public HiberItem(String name) {
+    public HiberItemBi(String name) {
         this.name = name;
     }
 
@@ -45,12 +45,12 @@ public class HiberItem {
     }
 
 
-    public HiberItemDescription getHiberItemDescription() {
-        return hiberItemDescription;
+    public HiberItemDescriptionBi getHiberItemDescriptionBi() {
+        return hiberItemDescriptionBi;
     }
 
-    public void setHiberItemDescription(HiberItemDescription hiberItemDescription) {
-        this.hiberItemDescription = hiberItemDescription;
+    public void setHiberItemDescriptionBi(HiberItemDescriptionBi hiberItemDescriptionBi) {
+        this.hiberItemDescriptionBi = hiberItemDescriptionBi;
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.preact.SpringBootSandbox.hibernate;
 
-import com.preact.SpringBootSandbox.hibernate.modal.bidirectional.HiberItemBi;
-import com.preact.SpringBootSandbox.hibernate.modal.bidirectional.HiberItemDescriptionBi;
-import com.preact.SpringBootSandbox.hibernate.modal.unidirectional.HiberItem;
-import com.preact.SpringBootSandbox.hibernate.modal.unidirectional.HiberItemDescription;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.bidirectional.HiberItemBi;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.bidirectional.HiberItemDescriptionBi;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.unidirectional.HiberItem;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.unidirectional.HiberItemDescription;
 
 import java.util.List;
 import java.util.stream.Collectors;

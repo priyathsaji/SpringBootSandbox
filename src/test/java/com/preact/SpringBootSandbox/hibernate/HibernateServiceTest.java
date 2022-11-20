@@ -1,9 +1,11 @@
 package com.preact.SpringBootSandbox.hibernate;
 
-import com.preact.SpringBootSandbox.hibernate.modal.bidirectional.HiberItemBi;
-import com.preact.SpringBootSandbox.hibernate.modal.bidirectional.HiberItemDescriptionBi;
-import com.preact.SpringBootSandbox.hibernate.modal.unidirectional.HiberItem;
-import com.preact.SpringBootSandbox.hibernate.modal.unidirectional.HiberItemDescription;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.bidirectional.HiberItemBi;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.bidirectional.HiberItemDescriptionBi;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.unidirectional.HiberItem;
+import com.preact.SpringBootSandbox.hibernate.modal.onetoone.unidirectional.HiberItemDescription;
+import com.preact.SpringBootSandbox.hibernate.modal.onetomany.ItemManufacturerOTM;
+import com.preact.SpringBootSandbox.hibernate.modal.onetomany.ItemOTM;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,4 +112,35 @@ class HibernateServiceTest {
 
     }
 
+    @Test
+    @Transactional
+    void addOTMData2Db() {
+
+        List<ItemManufacturerOTM> itemManufacturerOTMS = hibernateService.addOTMData2Db(10);
+
+        Assertions.assertThat(itemManufacturerOTMS)
+                .hasSize(10);
+
+        ItemManufacturerOTM item = itemManufacturerOTMS.stream().findFirst().orElse(null);
+        Assertions.assertThat(item)
+                .isNotNull();
+
+        ItemManufacturerOTM manItemFromDb = entityManager.find(ItemManufacturerOTM.class, item.getId());
+
+        Assertions.assertThat(manItemFromDb)
+                .isNotNull();
+
+        Assertions.assertThat(manItemFromDb.getItems()) // will fail if the @Transaction annotation is not there because of lack of persistence context
+                .hasSize(10)
+                .allMatch(it-> Objects.nonNull(it.getItemName()));
+
+        ItemOTM item2Fetch = manItemFromDb.getItems().get(0);
+
+        ItemOTM itemFromDb = entityManager.find(ItemOTM.class, item2Fetch.getId());
+
+        Assertions.assertThat(itemFromDb)
+                .isNotNull()
+                .matches(it->Objects.nonNull(it.getItemManufacturer().getManufacturerName()),"manufacturer not found");
+
+    }
 }
